@@ -102,16 +102,16 @@ private
 
 	def execute_wkhtmltoimage(params, filename)
 		Thread.abort_on_exception = true
-		execute = Thread.new do
+		work_thread = Thread.new do
 			%x{wkhtmltoimage #{params} #{@source} #{filename} 2> /dev/null}
 		end
-		control = Thread.new do
+		control_thread = Thread.new do
 			sleep(15)
-			if execute.alive?
-				execute.exit
+			if work_thread.alive?
+				work_thread.exit
 				raise ThreadError, "Couldn't connect to '#{@source}'. Check your link or try later" 
 			end
 		end
-		execute.join
+		work_thread.join
 	end
 end
